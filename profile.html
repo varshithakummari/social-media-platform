@@ -1,0 +1,35 @@
+{% extends 'social/base.html' %}
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header-card">
+        <h2>@{{ target_user.username }}</h2>
+        <p class="bio-text">{{ target_user.profile.bio|default:"No bio added yet." }}</p>
+        
+        <div class="stats-row">
+            <span><strong>{{ target_user.profile.following.count }}</strong> Following</span>
+            <span><strong>{{ target_user.profile.followers.count }}</strong> Followers</span>
+        </div>
+
+        {% if request.user != target_user %}
+        <div class="action-row">
+            <a href="{% url 'follow_toggle' target_user.username %}" class="follow-btn">
+                {% if is_following %} Unfollow {% else %} Follow {% endif %}
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <h3>Posts by this User</h3>
+    {% for post in user_posts %}
+    <div class="post-card">
+        <small class="timestamp">{{ post.created_at|date:"M d, Y H:i" }}</small>
+        <p class="post-body">{{ post.content }}</p>
+        <div class="post-actions">
+            <a href="{% url 'like_post' post.id %}" class="action-btn">❤️ {{ post.likes.count }}</a>
+        </div>
+    </div>
+    {% empty %}
+    <p class="no-content">This user hasn't posted anything yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}
